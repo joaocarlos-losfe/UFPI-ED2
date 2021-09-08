@@ -1,51 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <string.h>
 
-#define TAM 10
-
-
-
-void misterio1(char b[TAM], float *dec, int i)
-{
-    if(i < strlen(b))
-    {
-        if(b[i] == '1')
-            *dec = *dec + pow(2,i);
-        
-        printf("b[i]: %c if b[i] == 1: %.2f \n", b[i], *dec);
-
-        misterio1(b,dec,++i);
-    }
-}
-
-
-float misterio2(char b[TAM], float dec, int i)
-{
-    if(i < strlen(b))
-    { 
-        printf("b[i]: %c if b[i] == 1: %.2f \n", b[i], dec);
-        
-        dec = misterio2(b,dec,i+1);
-        if(b[i] == '1')
-        dec = dec + pow(2,i);
-    }
-    return(dec);
-}
 
 int main()
 {
     
-    char str[10] = {'1', '0', '1', '1', '0', '1', '1', '0', '1', '1'};
+    /*
+        nas 2 funções ("misterio1" e "misterio2") o loop recursivo continua ate somente atigir a quantidade 
+        de caracteres existentente na string. 
 
-    float dec = 1.0;
+        Na função "misterio1", é executado em ordem crescente ( posicões do array acessadas 0, 1, 2..) e verificado 
+        se o caractere é "1". caso seja, é executado a operação "*dec = *dec + pow(2,i)", onde *dec foi 
+        repassado como referencia para atualizar seu valor a cada chamada recursiva sem pendencia.
 
-    misterio1(str, &dec, 0);
-
-    printf("\n\n");
-
-    misterio2(str, dec, 0);
+        Já na função "misterio2", diferente da função "misterio1", ocorre uma recursão com pendencia, 
+        onde a função chega no "teto" da pilha de execução, para em seguida retornar a função
+        e executar as operações pendentes. um efeito que se observa que a ordem de execução ocorre 
+        de forma decresente (posicões do array acessadas 9, 8, 7..)
+        
+    
+    */
 
     return 0;
 }
