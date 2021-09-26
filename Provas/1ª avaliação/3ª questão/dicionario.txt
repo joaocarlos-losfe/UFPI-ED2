@@ -1,0 +1,15 @@
+%capitulo 1
+car: carro
+delete: apagar, remover, deletar
+litle: pequeno
+girl: menina, garota, moca
+
+%capitulo 2
+plane: aviao
+boy: menino, garoto
+notebook: caderno
+
+%capitulo 3
+e1: p1, p2, p3
+e2: pa, pk, pc
+e3: pe, pj, pg, p3

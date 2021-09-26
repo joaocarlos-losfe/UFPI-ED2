@@ -1,0 +1,2 @@
+gcc -std=c99 -Wall main.c serie\series.c serie\serie_node.c serie\temporadas\data.c serie\temporadas\simple_linked_list.c  serie\temporadas\participantes\abb_node.c serie\temporadas\participantes\abb_main.c -o main
+.\main

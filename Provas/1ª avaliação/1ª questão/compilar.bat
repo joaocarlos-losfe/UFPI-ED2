@@ -1,0 +1,3 @@
+gcc -o main BST/bst.c BST/bst_node.c operations.c main.c
+echo compilado com sucesso...
+.\main

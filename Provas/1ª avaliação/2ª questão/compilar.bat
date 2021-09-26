@@ -1,0 +1,3 @@
+gcc -o main ./AVL/avl.c ./AVL/avl_node.c operations.c main.c
+echo compilado com sucesso...
+.\main
