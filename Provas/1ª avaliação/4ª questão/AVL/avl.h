@@ -16,7 +16,7 @@ struct AVL
 
 
 AVL avlStart();
-int avlHeight(AVLNode node);
+int avlNodeHeight(AVLNode node);
 int avlBalancingFactor(AVLNode node);
 int max(int x, int y);
 AVLNode avlRotateToRight(AVLNode node);
@@ -30,7 +30,7 @@ AVLNode avlSeach(AVLNode root_node, char *key); // procura um elemento da arvore
 void avlPrint(AVLNode root_node); // exibe a arvore inteira
 int avlCountNodes(AVLNode root_node); // conta o numero de nos da arvore
 AVLNode avlSeachDad(AVLNode node, char *key, AVLNode * dad); // procura um elemento da arvore para delecao
-AVLNode avlDelete(AVLNode root_node, char *key); // deleta um elemento da arvore
+AVLNode avlNodeDelete(AVLNode root_node, char *key); // deleta um elemento da arvore
 int avlCountSheets(AVLNode node); //conta o numero de folhas da aarvore
 int avlDephNode(AVLNode node, char *key); //busca a profudidadade dado um elemento
 AVLNode avlDestroy(AVLNode root_node); // destruir a arvore inteira

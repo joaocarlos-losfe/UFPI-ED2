@@ -16,7 +16,7 @@ struct AVL
 
 
 AVL avlStart();
-int avlHeight(AVLNode node);
+int avlNodeHeight(AVLNode node);
 int avlBalancingFactor(AVLNode node);
 int max(int x, int y);
 AVLNode avlRotateToRight(AVLNode node);
@@ -35,6 +35,6 @@ int avlCountSheets(AVLNode node); //conta o numero de folhas da aarvore
 int avlDephNode(AVLNode node, int key); //busca a profudidadade dado um elemento
 AVLNode avlDestroy(AVLNode root_node); // destruir a arvore inteira
 void avlShallower(AVLNode root_node, int count, int *less_depth_result); // menor profundidade das folhas
-void bstMinDepth(AVLNode root_node, int count, int *less_depth_result);
+void avlMinDepth(AVLNode root_node, int count, int *less_depth_result);
 
 #endif

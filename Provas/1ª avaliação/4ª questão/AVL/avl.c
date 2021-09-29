@@ -12,7 +12,7 @@ AVL avlStart()
 }
 
 
-int avlHeight(AVLNode node)
+int avlNodeHeight(AVLNode node)
 {
 	if(node == NULL) 
 		return -1;
@@ -36,8 +36,8 @@ AVLNode avlRotateToRight(AVLNode node)
 	node->left = temp->right;
 	temp->right = node;
 
-	node->height = max(avlHeight(node->right), avlHeight(node->left)) + 1;
-	temp->height = max(avlHeight(temp->left), node->height) + 1;
+	node->height = max(avlNodeHeight(node->right), avlNodeHeight(node->left)) + 1;
+	temp->height = max(avlNodeHeight(temp->left), node->height) + 1;
 
 	return temp;
 }
@@ -49,61 +49,10 @@ AVLNode avlRotateToLeft(AVLNode node)
 	node->right = temp->left;
 	temp->left = node;
 
-	node->height = max(avlHeight(node->right), avlHeight(node->left)) + 1; 
-	temp->height = max(avlHeight(temp->right), node->height) + 1;
+	node->height = max(avlNodeHeight(node->right), avlNodeHeight(node->left)) + 1; 
+	temp->height = max(avlNodeHeight(temp->right), node->height) + 1;
 
 	return temp;
-}
-
-AVLNode avlRotateLeftToRight(AVLNode node)
-{
-	node->left = avlRotateToLeft(node->left);
-	return avlRotateToRight(node);
-}
-
-AVLNode avlRotateRightToLeft(AVLNode node)
-{
-	node->right = avlRotateToRight(node->right);
-	return avlRotateToLeft(node);
-}
-
-AVLNode avlInsert(AVLNode root_node, char *key)
-{
-	if (root_node == NULL)
-	{
-		AVLNode new_node;
-		new_node = avlNodeCreate(key);
-		return new_node;
-	}
-
-	if( strcmp(key, root_node->key) < 0)
-	{
-		root_node->left = avlInsert(root_node->left, key);
-
-		if ((avlHeight(root_node->left)) - (avlHeight(root_node->right)) == 2)
-		{
-			if (strcmp(key, root_node->left->key) < 0)
-				root_node = avlRotateToRight(root_node);
-			else
-				root_node = avlRotateLeftToRight(root_node);
-		}
-	}
-	else if(strcmp(key, root_node->key) > 0)
-	{
-		root_node->right = avlInsert(root_node->right, key);
-
-		if ((avlHeight(root_node->right)) - (avlHeight(root_node->left)) == 2)
-		{
-			if (strcmp(key, root_node->right->key) > 0)
-				root_node = avlRotateToLeft(root_node);
-			else
-				root_node = avlRotateRightToLeft(root_node);
-		}
-	}
-
-	root_node->height = max(avlHeight(root_node->left), avlHeight(root_node->right)) + 1;
-	
-	return root_node;
 }
 
 AVLNode avlSeach(AVLNode root_node, char *key)
@@ -140,74 +89,140 @@ void avlPrint(AVLNode root_node)
 	}
 }
 
-AVLNode avlSeachDad(AVLNode node, char *key, AVLNode * dad)
+
+AVLNode minValueNode(AVLNode node) // ultimo no da esquerda
 {
 	AVLNode current = node;
-	*dad = NULL;
 
-	while (current)
+	while (current->left != NULL)
 	{
-		if(strcmp(current->key, key) == 0)
-			return current;
-
-		*dad = current;
-
-		if(strcmp(key, current->key) < 0)
-			current = current->left;
-		else
-			current = current->right;
+		current = current->left;
 	}
-	return NULL;
+
+	return current;
+	
 }
 
-AVLNode avlDelete(AVLNode root_node, char *key)
+int avlNodeBalance(AVLNode node)
 {
-	AVLNode dad, node, p, q;
-	node = avlSeachDad(root_node, key, &dad);
+	if (node == NULL )
+		return 0;
+	else
+		return avlNodeHeight(node->left) - avlNodeHeight(node->right);
+	
+}
 
-	if (node == NULL)
-		return (root_node);
 
-	if(!node->left || !node->right)
+AVLNode avlInsert(AVLNode root_node, char *key)
+{
+	if (root_node == NULL)
 	{
-		if(!node->left)
-			q = node->right; //direita
+		AVLNode new_node;
+		new_node = avlNodeCreate(key);
+		return new_node;
+	}
+
+	if (strcmp(key, root_node->key) < 0)
+		root_node->left = avlInsert(root_node->left, key);
+	else if(strcmp(key, root_node->key) > 0)
+		root_node->right = avlInsert(root_node->right, key);
+	else
+		return root_node;
+	
+	//atulizar a altura dos nós
+	root_node->height = 1 + max(avlNodeHeight(root_node->left), avlNodeHeight(root_node->right));
+
+	int node_balance = avlNodeBalance(root_node);
+
+	// rotacao unica
+
+	if (node_balance > 1 && strcmp(key, root_node->key) < 0)
+		return avlRotateToRight(root_node);
+
+	if(node_balance < -1 && strcmp(key, root_node->key) > 0)
+		return avlRotateToLeft(root_node);
+
+	// rotacao dupla
+	if (node_balance > 1 && strcmp(key, root_node->key) > 0)
+	{
+		root_node->left = avlRotateToLeft(root_node->left);
+		return avlRotateToRight(root_node);
+	}
+
+	if (node_balance < -1 && strcmp(key, root_node->key) < 0)
+	{
+		root_node->right = avlRotateToRight(root_node->right);
+		return avlRotateToLeft(root_node);
+	}
+
+	return root_node;
+	
+}
+
+AVLNode avlNodeDelete(AVLNode root_node, char *key)
+{
+	if (root_node == NULL)
+		return root_node;
+	
+	if (strcmp(key, root_node->key) < 0)
+	{
+		root_node->left = avlNodeDelete(root_node->left, key);
+	}
+	else if(strcmp(key, root_node->key) > 0)
+	{
+		root_node->right = avlNodeDelete(root_node->right, key);
+	}
+	else
+	{
+		if ( (root_node->left) == NULL || (root_node->right) == NULL  )
+		{
+			AVLNode temp_node = root_node->left ? root_node->left : root_node->right;
+
+			if (temp_node == NULL)
+			{
+				temp_node = root_node;
+				root_node = NULL;
+			}
+			else
+			{
+				*root_node = *temp_node; 
+			}
+
+			free(temp_node);
+		}
 		else
-			q = node->left;  // esquerda
-	}
-	else
-	{
-		p = node;
-		q = node->left;
-
-		while (q->right)
 		{
-			p = q;
-			q = q->right;
-		}
+			AVLNode temp_node = minValueNode(root_node->right);
 
-		if (p != node)
-		{
-			p->right = q->left;
-			q->left = node->left;
+			strcpy(root_node->key, temp_node->key);	
+		
+			root_node->right = avlNodeDelete(root_node->right, temp_node->key);
 		}
-
-		q->right = node->right;
 	}
 
-	if(!dad)
+	int node_balance = avlNodeBalance(root_node);
+
+	if (node_balance > 1 && avlNodeBalance(root_node->left) >= 0)
+		return avlRotateToRight(root_node);
+	
+	if (node_balance > 1 && avlNodeBalance(root_node->left) < 0)
 	{
-		free(node);
-		return (q);
+		root_node->left = avlRotateToLeft(root_node->left);
+		return avlRotateToRight(root_node);
 	}
 
-	if(strcmp(key, dad->key) < 0)
-		dad->left = q;
-	else
-		dad->right = q;
+	if (node_balance < -1 && avlNodeBalance(root_node->right) <= 0)
+		return avlRotateToLeft(root_node);
+	
+	if (node_balance < -1 && avlNodeBalance(root_node->right) > 0)
+	{
+		root_node->right = avlRotateToRight(root_node->right);
 
-	free(node);
-	return (root_node);
+		return avlRotateToLeft(root_node);
+	}
+
+	return root_node;
+	
 }
 
 int avlCountSheets(AVLNode node)

@@ -11,14 +11,33 @@ AVL avlStart()
 	return abb;
 }
 
+AVLNode avlSeach(AVLNode root_node, int key)
+{
+	if (root_node == NULL)
+		return NULL;
+	else if (root_node->key == key)
+		return root_node;
+	else if(root_node->key > key)
+		return avlSeach(root_node->left, key); //esquerda
+	else
+		return avlSeach(root_node->right, key); // direita
+}
 
-int avlHeight(AVLNode node)
+int avlNodeHeight(AVLNode node)
 {
 	if(node == NULL) 
 		return -1;
 	return node->height;
 }
 
+int avlNodeBalance(AVLNode node)
+{
+	if (node == NULL )
+		return 0;
+	else
+		return avlNodeHeight(node->left) - avlNodeHeight(node->right);
+	
+}
 
 int max(int x, int y)
 {
@@ -36,8 +55,8 @@ AVLNode avlRotateToRight(AVLNode node)
 	node->left = temp->right;
 	temp->right = node;
 
-	node->height = max(avlHeight(node->right), avlHeight(node->left)) + 1;
-	temp->height = max(avlHeight(temp->left), node->height) + 1;
+	node->height = max(avlNodeHeight(node->right), avlNodeHeight(node->left)) + 1;
+	temp->height = max(avlNodeHeight(temp->left), node->height) + 1;
 
 	return temp;
 }
@@ -49,73 +68,23 @@ AVLNode avlRotateToLeft(AVLNode node)
 	node->right = temp->left;
 	temp->left = node;
 
-	node->height = max(avlHeight(node->right), avlHeight(node->left)) + 1; 
-	temp->height = max(avlHeight(temp->right), node->height) + 1;
+	node->height = max(avlNodeHeight(node->right), avlNodeHeight(node->left)) + 1; 
+	temp->height = max(avlNodeHeight(temp->right), node->height) + 1;
 
 	return temp;
 }
 
-AVLNode avlRotateLeftToRight(AVLNode node)
-{
-	node->left = avlRotateToLeft(node->left);
-	return avlRotateToRight(node);
-}
 
-AVLNode avlRotateRightToLeft(AVLNode node)
-{
-	node->right = avlRotateToRight(node->right);
-	return avlRotateToLeft(node);
-}
-
-AVLNode avlInsert(AVLNode root_node, int key)
-{
-	if (root_node == NULL)
-	{
-		AVLNode new_node;
-		new_node = avlNodeCreate(key);
-		return new_node;
-	}
-
-	if(key < root_node->key)
-	{
-		root_node->left = avlInsert(root_node->left, key);
-
-		if ((avlHeight(root_node->left)) - (avlHeight(root_node->right)) == 2)
-		{
-			if (key < root_node->left->key)
-				root_node = avlRotateToRight(root_node);
-			else
-				root_node = avlRotateLeftToRight(root_node);
-		}
-	}
-	else if(key > root_node->key)
-	{
-		root_node->right = avlInsert(root_node->right, key);
-
-		if ((avlHeight(root_node->right)) - (avlHeight(root_node->left)) == 2)
-		{
-			if (key > root_node->right->key)
-				root_node = avlRotateToLeft(root_node);
-			else
-				root_node = avlRotateRightToLeft(root_node);
-		}
-	}
-
-	root_node->height = max(avlHeight(root_node->left), avlHeight(root_node->right)) + 1;
-	
-	return root_node;
-}
-
-AVLNode avlSeach(AVLNode root_node, int key)
+AVLNode avlSeachNode(AVLNode root_node, int key)
 {
 	if (root_node == NULL)
 		return NULL;
 	else if (root_node->key == key)
 		return root_node;
 	else if(root_node->key > key)
-		return avlSeach(root_node->left, key); //esquerda
+		return avlSeachNode(root_node->left, key); //esquerda
 	else
-		return avlSeach(root_node->right, key); // direita
+		return avlSeachNode(root_node->right, key); // direita
 }
 
 
@@ -130,86 +99,141 @@ int avlCountNodes(AVLNode root_node)
 	}
 }
 
-void avlPrint(AVLNode root_node)
+void avlShowAllNodes(AVLNode root_node)
 {
 	if (root_node != NULL)
 	{
 		printf("(");
 		avlNodePrint(root_node);
-		avlPrint(root_node->left);
-		avlPrint(root_node->right);
+		avlShowAllNodes(root_node->left);
+		avlShowAllNodes(root_node->right);
 		printf(")");
 	}
 }
 
-AVLNode avlSeachDad(AVLNode node, int key, AVLNode * dad)
+
+AVLNode minValueNode(AVLNode node)
 {
 	AVLNode current = node;
-	*dad = NULL;
 
-	while (current)
+	while (current->left != NULL)
 	{
-		if(current->key == key)
-			return current;
-
-		*dad = current;
-
-		if(key < current->key)
-			current = current->left;
-		else
-			current = current->right;
+		current = current->left;
 	}
-	return NULL;
+
+	return current;
+	
 }
 
-AVLNode avlDelete(AVLNode root_node, int key)
+AVLNode avlInsert(AVLNode root_node, int key)
 {
-	AVLNode dad, node, p, q;
-	node = avlSeachDad(root_node, key, &dad);
-
-	if (node == NULL)
-		return (root_node);
-
-	if(!node->left || !node->right)
+	if (root_node == NULL)
 	{
-		if(!node->left)
-			q = node->right; //direita
+		AVLNode new_node;
+		new_node = avlNodeCreate(key);
+		return new_node;
+	}
+
+	if (key < root_node->key)
+		root_node->left = avlInsert(root_node->left, key);
+	else if(key > root_node->key)
+		root_node->right = avlInsert(root_node->right, key);
+	else
+		return root_node;
+	
+	//atulizar a altura dos nós
+	root_node->height = 1 + max(avlNodeHeight(root_node->left), avlNodeHeight(root_node->right));
+
+	int node_balance = avlNodeBalance(root_node);
+
+	// rotacao unica
+
+	if (node_balance > 1 && key < root_node->left->key)
+		return avlRotateToRight(root_node);
+
+	if(node_balance < -1 && key > root_node->right->key)
+		return avlRotateToLeft(root_node);
+
+	// rotacao dupla
+	if (node_balance > 1 && key > root_node->left->key)
+	{
+		root_node->left = avlRotateToLeft(root_node->left);
+		return avlRotateToRight(root_node);
+	}
+
+	if (node_balance < -1 && key < root_node->right->key)
+	{
+		root_node->right = avlRotateToRight(root_node->right);
+		return avlRotateToLeft(root_node);
+	}
+
+	return root_node;
+	
+}
+
+AVLNode avlNodeDelete(AVLNode root_node, int key)
+{
+	if (root_node == NULL)
+		return root_node;
+	
+	if (key < root_node->key)
+	{
+		root_node->left = avlNodeDelete(root_node->left, key);
+	}
+	else if(key > root_node->key)
+	{
+		root_node->right = avlNodeDelete(root_node->right, key);
+	}
+	else
+	{
+		if ( (root_node->left) == NULL || (root_node->right) == NULL  )
+		{
+			AVLNode temp_node = root_node->left ? root_node->left : root_node->right;
+
+			if (temp_node == NULL)
+			{
+				temp_node = root_node;
+				root_node = NULL;
+			}
+			else
+			{
+				*root_node = *temp_node; 
+			}
+
+			free(temp_node);
+		}
 		else
-			q = node->left;  // esquerda
-	}
-	else
-	{
-		p = node;
-		q = node->left;
-
-		while (q->right)
 		{
-			p = q;
-			q = q->right;
-		}
+			AVLNode temp_node = minValueNode(root_node->right);
+			root_node->key = temp_node->key;
 
-		if (p != node)
-		{
-			p->right = q->left;
-			q->left = node->left;
+			root_node->right = avlNodeDelete(root_node->right, temp_node->key);
 		}
-
-		q->right = node->right;
 	}
 
-	if(!dad)
+	int node_balance = avlNodeBalance(root_node);
+
+	if (node_balance > 1 && avlNodeBalance(root_node->left) >= 0)
+		return avlRotateToRight(root_node);
+	
+	if (node_balance > 1 && avlNodeBalance(root_node->left) < 0)
 	{
-		free(node);
-		return (q);
+		root_node->left = avlRotateToLeft(root_node->left);
+		return avlRotateToRight(root_node);
 	}
 
-	if(key < dad->key)
-		dad->left = q;
-	else
-		dad->right = q;
+	if (node_balance < -1 && avlNodeBalance(root_node->right) <= 0)
+		return avlRotateToLeft(root_node);
+	
+	if (node_balance < -1 && avlNodeBalance(root_node->right) > 0)
+	{
+		root_node->right = avlRotateToRight(root_node->right);
 
-	free(node);
-	return (root_node);
+		return avlRotateToLeft(root_node);
+	}
+
+	return root_node;
+	
 }
 
 int avlCountSheets(AVLNode node)
@@ -228,7 +252,6 @@ int avlCountSheets(AVLNode node)
 		return 0;
 	}
 }
-
 
 
 int avlDephNode(AVLNode root_node, int key)
@@ -271,24 +294,9 @@ AVLNode avlDestroy(AVLNode root_node)
 	return root_node;	
 }
 
-void avlShallower(AVLNode root_node, int count, int *less_depth_result)
-{
-	if (root_node != NULL)
-	{
-		if(avlNodeIsLeaf(root_node))
-		{
-			if (count < *less_depth_result)
-				*less_depth_result = count;	
-		}
-		else
-			count++;
-		
-		avlShallower(root_node->left, count,  less_depth_result);
-		avlShallower(root_node->right, count, less_depth_result);
-	}	
-}
 
-void bstMinDepth(AVLNode root_node, int count, int *less_depth_result)
+
+void avlMinDepth(AVLNode root_node, int count, int *less_depth_result)
 {
 	if (root_node != NULL)
 	{
@@ -300,7 +308,7 @@ void bstMinDepth(AVLNode root_node, int count, int *less_depth_result)
 		else
 			count++;
 		
-		bstMinDepth(root_node->left, count,  less_depth_result);
-		bstMinDepth(root_node->right, count, less_depth_result);
+		avlMinDepth(root_node->left, count,  less_depth_result);
+		avlMinDepth(root_node->right, count, less_depth_result);
 	}	
 }

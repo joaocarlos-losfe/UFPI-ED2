@@ -15,6 +15,7 @@ void menu()
 int main()
 {
     
+        
     BST tree = bstStart();
     
     srand(time(NULL));
@@ -22,6 +23,7 @@ int main()
     int total_trees = 30; // total de arvores
     int number_of_elements = 1060; // numero de elementos para inserção
     int data_range = number_of_elements * 10; // range da função rand  
+
     int op = 0;
     int i = 0;
 
@@ -47,6 +49,7 @@ int main()
         }
         
     } while (op != 0);
+
     
     return 0;
 }

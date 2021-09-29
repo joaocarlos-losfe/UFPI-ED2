@@ -30,6 +30,6 @@ void op3(AVL arr_tree[], int chapter, char *wold_p)
 {    
     if(listSeach(arr_tree[chapter]->root_node->list, wold_p)  != NULL)
     {
-        arr_tree[chapter]->root_node = avlDelete(arr_tree[chapter]->root_node, arr_tree[chapter]->root_node->key);
+        arr_tree[chapter]->root_node = avlNodeDelete(arr_tree[chapter]->root_node, arr_tree[chapter]->root_node->key);
     }
 }

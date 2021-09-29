@@ -1,6 +1,6 @@
 #include "operations.h"
 
-void printEnWold(BSTNode root_node, char *wold_e)
+void printEnWold(BSTNode root_node, char *wold_e) // escreve a key do no caso a palavra em portugues solicitada exista
 {
     if (root_node != NULL)
 	{   

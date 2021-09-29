@@ -1,40 +1,67 @@
 #include "operations.h"
 
-
-int sheetLevelsDepth(AVL tree)
+int RandomInteger(int min, int max)
 {
-    int greater_depth = avlHeight(tree->root_node);
-    int smaller_depth = greater_depth;
-
-    bstMinDepth(tree->root_node, 0, &smaller_depth);
+    int k;
     
-    printf("\n Nivel de folha de MAIOR profundidade: %d", greater_depth);
-    printf("\n Nivel de folha de MENOR profundidade: %d", smaller_depth);
+    k = (rand() % max) + min;
+    return k;
+}
 
-    return greater_depth - smaller_depth;
+double media(double arr[], int count)
+{
+    int i;
+    double sum = 0;
+
+    for(i=0; i<count; i++)
+        sum += arr[i];
+
+    return sum / count;    
+}
+
+
+int sheetLevelsDepth(AVL tree, int arr1[], int arr2[], int i)
+{
+    int max_depth = avlNodeHeight(tree->root_node);
+    int min_depth = max_depth;
+
+    avlMinDepth(tree->root_node, 0, &min_depth);
+    
+    printf("\n Nivel de folha de MAIOR profundidade: %d", max_depth);
+    printf("\n Nivel de folha de MENOR profundidade: %d", min_depth);
+
+    arr1[i] = max_depth;
+    arr2[i] = min_depth; 
+
+    return max_depth - min_depth;
 
 }
 
+
+
 void search(AVL tree)
 {
-    const int elements_to_search[] = {0, 9, 99, 999, 1999};
+    const int elements_to_search[] = {0, 9, 99, 999, 1999, 29000};
     int i = 0;
     AVLNode node;
     printf("\n");
 
     time_t elapsed_search_time;
 
-    double runtime;
+    double time;
+
+    double media_time[sizeof(elements_to_search) / sizeof(int)];
 
     for (i = 0; i < sizeof(elements_to_search) / sizeof(int); i++)
     {
         printf("\n[%6d] - ", elements_to_search[i]);
 
         elapsed_search_time = clock();
-
         node = avlSeach(tree->root_node, elements_to_search[i]);
-        runtime = ((double)elapsed_search_time)*1000/CLOCKS_PER_SEC;
-        printf("tempo de procura: %f. ", runtime);
+        time = ((double)elapsed_search_time)*1000/CLOCKS_PER_SEC;
+        printf("tempo de procura: %.0f ns. ", time);
+
+        media_time[i] = time;
         
         if(node != NULL)
             printf("Encontrado");
@@ -42,6 +69,8 @@ void search(AVL tree)
             printf("Nao encontrado");
     }
     
+    printf("\n\n Tempo medio de procura: %.0f ns.", media(media_time, sizeof(elements_to_search) / sizeof(int)));
+
 }
 
 bool contains(int value, int *array, int len)
@@ -110,44 +139,68 @@ void diferencesDepth(int *arr, int number_of_trees)
     
 }
 
+void insert(AVL tree, int number_of_elements, int data_range)
+{
+    int i = 0;
+
+    for (i = 1; i <= number_of_elements; i++)
+    {
+        tree->root_node = avlInsert(tree->root_node, RandomInteger(0, data_range));
+    }
+}
+
+int mediaDepht(int arr[], int count)
+{
+    int sum = 0;
+    int i;
+
+    for(i=0; i<count; i++)
+        sum+=arr[i];
+
+    return sum / count;
+}
+
 void startInsertions(int number_of_trees, int number_of_elements, int data_range)
 {
     AVL tree = avlStart();
 
     srand(time(NULL));
 
-    clock_t elapsed_insertion_time;
+    clock_t insertion_time;
     int i = 0;
     int j = 0;
     
     int diferences_depth[number_of_trees];
-    int number_generated = 0;
-    double runtime;
+    double media_time[number_of_trees];
 
-    for (i = 1; i <= number_of_trees; i++)
+    int media_maxHeight[number_of_trees]; // media das alturas maximas
+    int media_minHeight[number_of_trees]; // media das alturas minimas
+
+
+    double time = 0;
+
+    for (i = 0; i < number_of_trees; i++)
     {
+        printf("\nArvore [%d]\n", i+1);
+
+        insertion_time = clock();
+        insert(tree, number_of_elements, data_range);
+        time = ((double)insertion_time)*1000/CLOCKS_PER_SEC;
+        printf("\n tempo de insercao: %.0lf ms", time);
+        media_time[i] = time;
+        diferences_depth[i] = sheetLevelsDepth(tree, media_maxHeight, media_minHeight, i);
         
-        printf("\nArvore [%d]\n", i);
-
-        elapsed_insertion_time = clock();
-
-        for (j = 1; j <= number_of_elements; j++)
-        {
-            number_generated = rand() % data_range;
-            tree->root_node = avlInsert(tree->root_node, number_generated);
-            //printf("\r inserindo elemento: %5d (%.2d %% concluidos)", number_generated,  ((j * 100) / number_of_elements));
-        }
-
-        runtime = ((double)elapsed_insertion_time)*1000/CLOCKS_PER_SEC;
-
-        diferences_depth[i-1] = sheetLevelsDepth(tree);
-        printf("\n tempo de insercao: %lf ms", runtime);
         search(tree);
         printf("\n\n Total de elementos inseridos com sucesso e sem repeticoes: %d", avlCountNodes(tree->root_node));
         tree->root_node = avlDestroy(tree->root_node);
         printf("\n");    
     }
 
+    printf("\n Tempo medio das insercoes: %.0lf ns\n", media(media_time, number_of_trees));
     diferencesDepth(diferences_depth, number_of_trees);
+
+    printf("\n\n Media das MAIORES profundidades: %d", mediaDepht(media_maxHeight, number_of_trees));
+    printf("\n Media das MENORES profundidades: %d", mediaDepht(media_minHeight, number_of_trees));
+    printf("\n");
         
 }
