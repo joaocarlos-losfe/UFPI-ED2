@@ -156,7 +156,7 @@ void listPrint(List list)
 {
     if (listIsEmpty(list)) 
     {
-        printf("empty list\n");
+        printf("empty list");
     } 
     else 
     {

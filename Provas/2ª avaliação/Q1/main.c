@@ -53,13 +53,17 @@ int main()
             break;
 
         case 3:
+            setbuf(stdin, NULL);
+            printf("palavra: "); scanf(" %[^\n]s", str);
+            tree->root_node = rbtInsert(tree->root_node, str);
+            printf("\ninserido...\n");
             break;
         
         case 4:
+            setbuf(stdin, NULL);
             printf("palavra: "); scanf(" %[^\n]s", str);
-            tree->root_node = rbtNodeRemove(tree->root_node, str);
 
-            if(temp_node!= NULL)
+            if(rbtRemove(&tree->root_node, str))
             {
                 printf("\nremovido...");
             }

@@ -70,7 +70,7 @@ void insertLines(DTNode node)
                     listInsertOrdered(node->linhasPalavraLeft, linha);
             }
 
-            if (strcmp(node->palavra_right, " ") != 0 && str_contains(node->palavra_right, array_str[i]))
+            if (strcmp(node->palavra_right, "") != 0 && str_contains(node->palavra_right, array_str[i]))
             {
                 Data linha = dataCreate();
                 linha->linha = i+1;
@@ -106,8 +106,6 @@ void toWord(char *line_str, DTT tree)
     int i = 0;
     int j = 0;
 
-    
-    
     for(i = 0; i< strlen(line_str); i++)
     {
         if(!invalidChar(line_str[i]))
@@ -136,13 +134,17 @@ void processFile(char *file_path, DTT *tree)
 {
     FILE *file;
     int chapter = -1;
+    time_t elapsed_search_time; // guarda o tempo inial
+    double time; // guarda o tempo final
 
     file = fopen(file_path, "r");
 
     char line_str[100];
 
     if (file != NULL)
-    {
+    {   
+        elapsed_search_time = clock();
+
         while (!feof(file))
         {
             if(fgets(line_str, 100, file)) // se a linha for lida com sucesso
@@ -156,9 +158,13 @@ void processFile(char *file_path, DTT *tree)
             }
         }
         
-        selectNode((*tree)->root);
     }
     else
         printf("erro ao processar arquivo. verifique o diretorio");
+    
+    time = ((double)elapsed_search_time)*1000/CLOCKS_PER_SEC;
+    printf("\ntempo de inserção: %.0f ns. \n", time);
+
+    selectNode((*tree)->root);
     
 }

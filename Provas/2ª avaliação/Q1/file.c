@@ -91,6 +91,7 @@ void toWord(char *line_str, RBT tree)
 
             if(temp_str[0] != ' ' && temp_str[0] != '\0')
             {
+
                 tree->root_node = rbtInsert(tree->root_node, temp_str); // insere na arvore
                 
                 RBTNode node = rbtNodeSearch(tree->root_node, temp_str); // pega o no recetemente inserido
@@ -108,6 +109,8 @@ void processFile(char *file_path, RBT *tree)
 {
     FILE *file;
     int chapter = -1;
+    time_t elapsed_search_time; // guarda o tempo inial
+    double time; // guarda o tempo final
 
     file = fopen(file_path, "r");
 
@@ -115,6 +118,9 @@ void processFile(char *file_path, RBT *tree)
 
     if (file != NULL)
     {
+        
+        elapsed_search_time = clock();
+        
         while (!feof(file))
         {
             if(fgets(line_str, 100, file)) // se a linha for lida com sucesso
@@ -134,5 +140,9 @@ void processFile(char *file_path, RBT *tree)
     }
     else
         printf("erro ao processar arquivo. verifique o diretorio");
+    
+    time = ((double)elapsed_search_time)*1000/CLOCKS_PER_SEC;
+
+    printf("\ntempo de inserção: %.0f ns. \n", time);
     
 }

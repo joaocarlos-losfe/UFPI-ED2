@@ -65,11 +65,18 @@ int main()
             break;
 
         case 3:
+
+            printf("palavra: "); scanf(" %[^\n]s", str);
+            char temp_str [20];
+            
+            ddtInsert(NULL, &tree->root, str, var_temp);
+            printf("inserido..\n");
+
             break;
         
         case 4:
             printf("palavra: "); scanf(" %[^\n]s", str);
-            DTNode parent;
+            DTNode parent = NULL;
             dttDelete(&parent, &tree->root, str); // deleção somente da info em si;            
             printf("\n");
             break;

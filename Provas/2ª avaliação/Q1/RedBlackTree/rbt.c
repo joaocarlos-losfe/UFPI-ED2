@@ -162,9 +162,10 @@ RBTNode rbtNodeSearch(RBTNode root, char *palavra)
 		return NULL;
 	else if(strcmp(palavra, root->palavra) == 0)
 		return root;
+
 	else if(strcmp(palavra, root->palavra) < 0)
 		return rbtNodeSearch(root->left, palavra);
-	else
+	else if (strcmp(palavra, root->palavra) > 0)
 		return rbtNodeSearch(root->right, palavra);
 }
 
@@ -204,7 +205,6 @@ RBTNode rbtNodeRemove(RBTNode node, char *palavra)
 	
 	return balanceNode(node);
 }
-
 
 bool rbtRemove(RBTNode *node, char *palavra)
 {
